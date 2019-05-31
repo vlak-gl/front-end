@@ -1,0 +1,4 @@
+apiVersion: v1
+description: A Helm chart for Sock Shop front-end
+name: SockShopFrontEnd
+version: 0.2.0
