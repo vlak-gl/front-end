@@ -10,7 +10,7 @@ pipeline {
       description: '',
       name: 'REQUESTED_ACTION')
     choice(
-      choices: ['vlk', 'default'],
+      choices: ['vlak', 'default'],
       description: '',
       name: 'namespace')    
     choice(
@@ -34,7 +34,7 @@ metadata:
 spec:
   containers:
   - name: helm
-    image: dtzar/helm-kubectl:2.11.0
+    image: dtzar/helm-kubectl:2.13.0
     command:
     - cat
     tty: true
@@ -88,12 +88,12 @@ spec:
     stage('Deploy') {
       steps {  
         container('helm') {
-          withCredentials([file(credentialsId: "kube-config-vlk-${cluster}-cluster", variable: 'KUBECONFIG'),
+          withCredentials([file(credentialsId: "kube-config-vlak-${cluster}-cluster", variable: 'KUBECONFIG'),
             usernamePassword(credentialsId: 'docker_registry_globallogicpractices',
             usernameVariable: 'DOCKER_REGISTRY_USERNAME',passwordVariable: 'DOCKER_REGISTRY_PASSWORD')]) {
               sh ''' 
                 export IMAGE="globallogicpractices/opengine-base"
-                if [ "${REQUESTED_ACTION}" == "AddService" ];then
+                if [ "${REQUESTED_ACTION}" == "ServiceAdd" ];then
                   helm install --name ${servicename} helm-chart --set name=${servicename},image.tag=${servicename}-app-${BUILD_NUMBER},image.repository=${IMAGE},service.type=ClusterIP,service.port=8020 --namespace ${namespace}
                 else
                   helm upgrade ${servicename} helm-chart --set name=${servicename},image.tag=${servicename}-app-${BUILD_NUMBER},image.repository=${IMAGE},service.type=ClusterIP,service.port=8020 --namespace ${namespace}    --recreate-pods
